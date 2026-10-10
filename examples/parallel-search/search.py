@@ -29,13 +29,18 @@ async def run(objective: str, queries: list[str], urls: list[str]) -> None:
             }),
             timeout=300,
         )
-        print(json.dumps({"web_search": search}, ensure_ascii=False))
+        print(json.dumps({"web_search": search}, ensure_ascii=False), flush=True)
         if urls:
             fetch = await asyncio.wait_for(
-                tools["web_fetch"].ainvoke({"urls": urls, "session_id": session_id}),
+                tools["web_fetch"].ainvoke({
+                    "urls": urls,
+                    "objective": objective[:200],
+                    "search_queries": queries,
+                    "session_id": session_id,
+                }),
                 timeout=300,
             )
-            print(json.dumps({"web_fetch": fetch}, ensure_ascii=False))
+            print(json.dumps({"web_fetch": fetch}, ensure_ascii=False), flush=True)
     finally:
         await manager.shutdown()
 
